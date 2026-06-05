@@ -1,0 +1,8 @@
+builders:
+  dtcg_builder:
+    import: "package:dtcg_builder/dtcg_builder.dart"
+    builder_factories: ["builder"]
+    build_extensions:
+      ".tokens.json": [".tokens.g.dart"]
+    auto_apply: all_packages
+    build_to: source
