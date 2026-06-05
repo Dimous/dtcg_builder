@@ -9,5 +9,5 @@ abstract class Utils {
     return chunks.first.toLowerCase() + chunks.skip(1).map((chunk) => chunk[0].toUpperCase() + chunk.substring(1)).join();
   }
 
-  static final _splitPattern = RegExp(r"[-_\s]+");
+  static final _splitPattern = RegExp(r"[-_\s]+|(?=[A-Z])");
 }
