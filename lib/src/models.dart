@@ -3,9 +3,7 @@ import "utils.dart";
 sealed class Node(this.path, this.type) {
   final String? type;
   final List<String> path;
-  late final String name = _name;
-
-  String get _name => "_${path.name}";
+  final String name = "_${path.name}";
 }
 
 //---
