@@ -475,17 +475,29 @@ final class Pipeline {
    */
   Expression _provideBuilder(String? type, dynamic value) => switch (type) {
     "color" => _buildColor(value),
+
     "shadow" => _buildShadow(value),
+
     "border" => _buildBorder(value),
+
     "number" => _buildNumber(value),
+
     "duration" => _buildDuration(value),
+
     "gradient" => _buildGradient(value),
+
     "dimension" => _buildDimension(value),
+
     "fontFamily" => _buildFontFamily(value),
+
     "fontWeight" => _buildFontWeight(value),
+
     "typography" => _buildTypography(value),
+
     "transition" => _buildTransition(value),
+
     "cubicBezier" => _buildCubicBezier(value),
+
     "strokeStyle" => _buildStrokeStyle(value),
 
     _ => _buildPrimitiveLiteral(value),
