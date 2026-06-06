@@ -165,7 +165,7 @@ final class Pipeline {
       "color": _toExpression(value["color"], "color"),
       "blurRadius": _toExpression(value["blur"], "dimension"),
       "spreadRadius": _toExpression(value["spread"], "dimension"),
-      if ($inset != null && $inset is bool) "inset": literalBool($inset),
+      if (null != $inset && $inset is bool) "inset": literalBool($inset),
       "offset": refer("Offset").call([_toExpression(value["offsetX"], "dimension"), _toExpression(value["offsetY"], "dimension")]),
     });
   }
