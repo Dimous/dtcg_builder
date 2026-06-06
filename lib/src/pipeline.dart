@@ -593,6 +593,7 @@ final class Pipeline {
         final Group group => _buildRecordLiteral(group),
       },
   });
+
   //---
 
   T _unwrapValue<T>(dynamic value) {
