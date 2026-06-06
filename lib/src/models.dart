@@ -5,13 +5,7 @@ sealed class Node(this.path, this.type) {
   final List<String> path;
   late final String name = _name;
 
-  String get _name {
-    if (path.isEmpty) {
-      return "";
-    }
-
-    return "_${path.name}";
-  }
+  String get _name => "_${path.name}";
 }
 
 //---
