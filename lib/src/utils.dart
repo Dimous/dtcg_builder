@@ -1,6 +1,10 @@
-abstract class Utils {
-  static String toCamelCase(String text) {
-    final chunks = text.split(_splitPattern).where((chunk) => chunk.isNotEmpty).toList();
+extension XString on String {
+  String get name {
+    if (isEmpty) {
+      return "";
+    }
+
+    final chunks = split(_splitPattern).where((chunk) => chunk.isNotEmpty).toList();
 
     if (chunks.isEmpty) {
       return "";
@@ -10,4 +14,10 @@ abstract class Utils {
   }
 
   static final _splitPattern = RegExp(r"[-_\s]+|(?=[A-Z])");
+}
+
+//---
+
+extension XStringIterable on Iterable<String> {
+  String get name => join("-").name;
 }

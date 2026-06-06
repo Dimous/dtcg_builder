@@ -10,8 +10,14 @@ sealed class Node(this.path, this.type) {
       return "";
     }
 
-    return "_${Utils.toCamelCase(path.join("-"))}";
+    return "_${path.name}";
   }
+}
+
+//---
+
+final class Group(super.path, super.type) extends Node {
+  final Map<String, Node> children = {};
 }
 
 //---
@@ -20,10 +26,4 @@ final class Token(super.path, String super.type, this.rawValue) extends Node {
   final dynamic rawValue;
 
   dynamic resolvedValue;
-}
-
-//---
-
-final class Group(super.path, super.type) extends Node {
-  final Map<String, Node> children = {};
 }

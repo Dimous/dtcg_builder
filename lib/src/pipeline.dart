@@ -41,7 +41,7 @@ final class Pipeline {
             (entry) => Field(
               (builder) => builder
                 ..modifier = FieldModifier.final$
-                ..name = "\$${Utils.toCamelCase(entry.key)}"
+                ..name = "\$${entry.key.name}"
                 ..assignment = (entry.value is Token ? refer((entry.value as Token).name) : _buildRecordLiteral(entry.value as Group)).code,
             ),
           ),
@@ -565,7 +565,7 @@ final class Pipeline {
     }
 
     if (value is Map) {
-      return literalRecord([], {for (final entry in value.entries) "\$${Utils.toCamelCase(entry.key)}": _toExpression(entry.value)});
+      return literalRecord([], {for (final entry in value.entries) "\$${entry.key.name}": _toExpression(entry.value)});
     }
 
     return literalNull;
@@ -575,7 +575,7 @@ final class Pipeline {
 
   Expression _buildRecordLiteral(Group node) => literalRecord([], {
     for (final entry in node.children.entries)
-      "\$${Utils.toCamelCase(entry.key)}": switch (entry.value) {
+      "\$${entry.key.name}": switch (entry.value) {
         Token(:final name) => refer(name),
 
         final Group group => _buildRecordLiteral(group),
