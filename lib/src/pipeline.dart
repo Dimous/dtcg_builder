@@ -65,7 +65,7 @@ final class Pipeline {
         throw Exception("Reference not found: $path");
       }
 
-      return _resolve(target.rawValue, {...visited, path});
+      return target;
     }
 
     if (value is List) {
