@@ -11,7 +11,7 @@ import "models.dart";
 final class Pipeline {
   void resolve() {
     for (final token in _registry.values) {
-      token.resolvedValue = _resolve(token.rawValue, {});
+      token.resolvedValue = _resolve(token.rawValue, [token.path.join(".")]);
     }
   }
 
@@ -51,18 +51,21 @@ final class Pipeline {
 
   //---
 
-  dynamic _resolve(dynamic value, Set<String> visited) {
+  dynamic _resolve(dynamic value, List<String> visited) {
     if (value is String && value.startsWith("{") && value.endsWith("}")) {
       final path = value.substring(1, value.length - 1);
+      final target = _registry[path] ?? (throw StateError("Reference not found: $path"));
 
-      if (visited.contains(path)) {
-        throw Exception("Circular reference detected: $path");
+      if (visited.indexOf(path) case final cycleStartIndex when 0 <= cycleStartIndex) {
+        throw StateError("Circular reference detected: ${[...visited.skip(cycleStartIndex), path].join(" -> ")}");
       }
 
-      final target = _registry[path];
+      visited.add(path);
 
-      if (null == target) {
-        throw Exception("Reference not found: $path");
+      try {
+        _resolve(target.rawValue, visited);
+      } finally {
+        visited.removeLast();
       }
 
       return target;
