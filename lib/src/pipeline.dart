@@ -227,15 +227,15 @@ final class Pipeline {
       throw ArgumentError("Duration 'unit' must be 'ms' or 's': $value");
     }
 
-    final milliseconds = switch ($unit) {
-      "ms" => $value,
+    return refer("Duration").call([], {
+      "microseconds": literalNum(switch ($unit) {
+        "s" => ($value * Duration.microsecondsPerSecond).round(),
 
-      "s" => 1000 * $value,
+        "ms" => ($value * Duration.microsecondsPerMillisecond).round(),
 
-      _ => throw ArgumentError("Unsupported duration unit: ${$unit}"),
-    };
-
-    return refer("Duration").call([], {"milliseconds": literalNum(milliseconds.round())});
+        _ => throw ArgumentError("Unsupported duration unit: ${$unit}"),
+      }),
+    });
   }
 
   //---
