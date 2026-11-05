@@ -333,22 +333,26 @@ final class Pipeline {
     value = _unwrapValue(value);
 
     if (value is num) {
-      final weight = value.round();
-
-      if (100 > weight || 900 < weight || 0 != weight % 100) {
-        throw ArgumentError("Flutter supports fontWeight from 100 to 900 in steps of 100: $value");
+      if (1 > value || 1000 < value || value != value.roundToDouble()) {
+        throw ArgumentError("Invalid fontWeight: $value");
       }
 
-      return refer("FontWeight").property("w$weight");
+      return refer("FontWeight").call([literalNum(value.toInt())]);
     }
 
-    if (value is String) {
-      final mapped = switch (value.toLowerCase()) {
+    if (value is! String) {
+      throw ArgumentError("fontWeight must be a number or string: $value");
+    }
+
+    return refer("FontWeight").call([
+      literalNum(switch (value) {
         "bold" => 700,
 
         "light" => 300,
 
         "medium" => 500,
+
+        "black" || "heavy" => 900,
 
         "thin" || "hairline" => 100,
 
@@ -358,17 +362,13 @@ final class Pipeline {
 
         "extra-light" || "ultra-light" => 200,
 
+        "extra-black" || "ultra-black" => 950,
+
         "normal" || "regular" || "book" => 400,
 
-        "black" || "heavy" || "extra-black" || "ultra-black" => 900,
-
-        _ => throw ArgumentError("Unknown fontWeight name: $value"),
-      };
-
-      return refer("FontWeight").property("w$mapped");
-    }
-
-    throw ArgumentError("fontWeight must be a number or string: $value");
+        _ => throw ArgumentError("Unknown fontWeight: $value"),
+      }),
+    ]);
   }
 
   //---
