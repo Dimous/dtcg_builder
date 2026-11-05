@@ -574,17 +574,21 @@ final class Pipeline {
 
   //---
 
-  Expression _buildPrimitiveLiteral(dynamic value) {
-    if (value is List) {
-      return literalList(value.map(_toExpression).toList());
-    }
+  Expression _buildPrimitiveLiteral(dynamic value) => switch (value) {
+    null => literalNull,
 
-    if (value is Map) {
-      return literalRecord([], {for (final entry in value.entries) "\$${entry.key.name}": _toExpression(entry.value)});
-    }
+    num value => literalNum(value),
 
-    return literalNull;
-  }
+    bool value => literalBool(value),
+
+    String value => literalString(value),
+
+    List value => literalList(value.map(_toExpression).toList()),
+
+    Map value => literalRecord([], {for (final entry in value.entries) "\$${entry.key.name}": _toExpression(entry.value)}),
+
+    _ => throw UnsupportedError("Unsupported value: ${value.runtimeType}"),
+  };
 
   //---
 
