@@ -297,7 +297,7 @@ final class Pipeline {
     return switch ($unit) {
       "px" => literalNum($value),
 
-      "rem" => literalNum(16 * $value),
+      "rem" => literalNum(16 * $value), // rem должен быть конфигурируемым
 
       _ => throw ArgumentError("Unsupported dimension unit: ${$unit}"),
     };
@@ -305,26 +305,22 @@ final class Pipeline {
 
   //---
 
-  Expression _buildFontFamily(dynamic value) {
+  ({Expression fontFamily, Expression? fontFamilyFallback}) _buildFontFamily(dynamic value) {
     value = _unwrapValue(value);
 
-    if (value is String) {
-      return literalString(value);
-    }
+    final fontFamilies = switch (value) {
+      String value => [value],
 
-    if (value is List) {
-      if (value.every((value) => value is String)) {
-        if (value.isEmpty) {
-          throw ArgumentError("fontFamily array cannot be empty");
-        }
+      List value when value.isNotEmpty && value.every((value) => value is String) => value.cast<String>(),
 
-        return literalString(value.first);
-      }
+      List value when value.isEmpty => throw ArgumentError("fontFamily array cannot be empty"),
 
-      throw ArgumentError("fontFamily array must contain only strings: $value");
-    }
+      List value => throw ArgumentError("fontFamily array must contain only strings: $value"),
 
-    throw ArgumentError("fontFamily must be a string or list of strings: $value");
+      _ => throw ArgumentError("fontFamily must be a string or list of strings: $value"),
+    };
+
+    return (fontFamily: literalString(fontFamilies.first), fontFamilyFallback: 1 < fontFamilies.length ? literalList(fontFamilies.skip(1).map(literalString).toList()) : null);
   }
 
   //---
@@ -386,7 +382,9 @@ final class Pipeline {
       }
     }
 
-    return refer("TextStyle").call([], {"height": _toExpression(value["lineHeight"], "number"), "fontSize": _toExpression(value["fontSize"], "dimension"), "fontFamily": _toExpression(value["fontFamily"], "fontFamily"), "fontWeight": _toExpression(value["fontWeight"], "fontWeight"), "letterSpacing": _toExpression(value["letterSpacing"], "dimension")});
+    final (:fontFamily, :fontFamilyFallback) = _buildFontFamily(value["fontFamily"]);
+
+    return refer("TextStyle").call([], {"fontFamily": fontFamily, "fontFamilyFallback": ?fontFamilyFallback, "height": _toExpression(value["lineHeight"], "number"), "fontSize": _toExpression(value["fontSize"], "dimension"), "fontWeight": _toExpression(value["fontWeight"], "fontWeight"), "letterSpacing": _toExpression(value["letterSpacing"], "dimension")});
   }
 
   //---
@@ -490,8 +488,6 @@ final class Pipeline {
     "gradient" => _buildGradient(value),
 
     "dimension" => _buildDimension(value),
-
-    "fontFamily" => _buildFontFamily(value),
 
     "fontWeight" => _buildFontWeight(value),
 
