@@ -33,15 +33,15 @@ final class Pipeline {
             (token) => Field(
               (builder) => builder
                 ..name = token.name
-                ..modifier = FieldModifier.final$
+                ..modifier = FieldModifier.constant
                 ..assignment = _toExpression(token.resolvedValue, token.type).code,
             ),
           ),
           ..._root.children.entries.map(
             (entry) => Field(
               (builder) => builder
-                ..modifier = FieldModifier.final$
                 ..name = "\$${entry.key.name}"
+                ..modifier = FieldModifier.constant
                 ..assignment = (entry.value is Token ? refer((entry.value as Token).name) : _buildRecordLiteral(entry.value as Group)).code,
             ),
           ),
