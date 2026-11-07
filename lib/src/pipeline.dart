@@ -33,7 +33,7 @@ final class Pipeline {
             (token) => Field(
               (builder) => builder
                 ..name = token.name
-                ..modifier = FieldModifier.constant
+                ..modifier = FieldModifier.final$
                 ..assignment = _toExpression(token.resolvedValue, token.type).code,
             ),
           ),
@@ -41,7 +41,7 @@ final class Pipeline {
             (entry) => Field(
               (builder) => builder
                 ..name = "\$${entry.key.name}"
-                ..modifier = FieldModifier.constant
+                ..modifier = FieldModifier.final$
                 ..assignment = (entry.value is Token ? refer((entry.value as Token).name) : _buildRecordLiteral(entry.value as Group)).code,
             ),
           ),
@@ -306,21 +306,18 @@ final class Pipeline {
   //---
 
   (Expression, Expression?) _buildFontFamily(dynamic value) {
-    value = _unwrapValue(value);
+    final rawValue = value.rawValue;
+    final fontFamily = refer(value.name);
 
-    final fontFamilies = switch (value) {
-      String value => [value],
+    if (rawValue is List) {
+      if (rawValue.isEmpty) {
+        throw ArgumentError("fontFamily array cannot be empty");
+      }
 
-      List value when value.isNotEmpty && value.every((value) => value is String) => value.cast<String>(),
-
-      List value when value.isEmpty => throw ArgumentError("fontFamily array cannot be empty"),
-
-      List value => throw ArgumentError("fontFamily array must contain only strings: $value"),
-
-      _ => throw ArgumentError("fontFamily must be a string or list of strings: $value"),
-    };
-
-    return (literalString(fontFamilies.first), 1 < fontFamilies.length ? literalList(fontFamilies.skip(1).map(literalString).toList()) : null);
+      return (fontFamily.property("first"), 1 < rawValue.length ? fontFamily.property("skip").call([literalNum(1)]).property("toList").call([]) : null);
+    } else {
+      return (fontFamily, null);
+    }
   }
 
   //---
