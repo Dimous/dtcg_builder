@@ -42,7 +42,7 @@ final class Pipeline {
               (builder) => builder
                 ..name = "\$${entry.key.name}"
                 ..modifier = FieldModifier.final$
-                ..assignment = (entry.value is Token ? refer((entry.value as Token).name) : _buildRecordLiteral(entry.value as Group)).code,
+                ..assignment = (entry.value is Token ? refer(entry.value.name) : _buildRecordLiteral(entry.value as Group)).code,
             ),
           ),
         ]),
@@ -306,18 +306,15 @@ final class Pipeline {
   //---
 
   (Expression, Expression?) _buildFontFamily(dynamic value) {
-    final rawValue = value.rawValue;
-    final fontFamily = refer(value.name);
+    final fontFamily = _toExpression(value);
 
-    if (rawValue is List) {
-      if (rawValue.isEmpty) {
-        throw ArgumentError("fontFamily array cannot be empty");
-      }
+    value = _unwrapValue(value);
 
-      return (fontFamily.property("first"), 1 < rawValue.length ? fontFamily.property("skip").call([literalNum(1)]).property("toList").call([]) : null);
-    } else {
-      return (fontFamily, null);
-    }
+    return value is List
+        ? value.isEmpty
+              ? throw ArgumentError("fontFamily array cannot be empty")
+              : (fontFamily.property("first"), 1 < value.length ? fontFamily.property("skip").call([literalNum(1)]).property("toList").call([]) : null)
+        : (fontFamily, null);
   }
 
   //---
