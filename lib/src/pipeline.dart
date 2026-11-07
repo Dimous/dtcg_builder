@@ -305,7 +305,7 @@ final class Pipeline {
 
   //---
 
-  ({Expression fontFamily, Expression? fontFamilyFallback}) _buildFontFamily(dynamic value) {
+  (Expression, Expression?) _buildFontFamily(dynamic value) {
     value = _unwrapValue(value);
 
     final fontFamilies = switch (value) {
@@ -320,7 +320,7 @@ final class Pipeline {
       _ => throw ArgumentError("fontFamily must be a string or list of strings: $value"),
     };
 
-    return (fontFamily: literalString(fontFamilies.first), fontFamilyFallback: 1 < fontFamilies.length ? literalList(fontFamilies.skip(1).map(literalString).toList()) : null);
+    return (literalString(fontFamilies.first), 1 < fontFamilies.length ? literalList(fontFamilies.skip(1).map(literalString).toList()) : null);
   }
 
   //---
@@ -382,7 +382,7 @@ final class Pipeline {
       }
     }
 
-    final (:fontFamily, :fontFamilyFallback) = _buildFontFamily(value["fontFamily"]);
+    final (fontFamily, fontFamilyFallback) = _buildFontFamily(value["fontFamily"]);
 
     return refer("TextStyle").call([], {"fontFamily": fontFamily, "fontFamilyFallback": ?fontFamilyFallback, "height": _toExpression(value["lineHeight"], "number"), "fontSize": _toExpression(value["fontSize"], "dimension"), "fontWeight": _toExpression(value["fontWeight"], "fontWeight"), "letterSpacing": _toExpression(value["letterSpacing"], "dimension")});
   }
